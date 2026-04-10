@@ -66,8 +66,21 @@ The dataset does not include live on-hand inventory, supplier lead times, or for
 # =============================================================================
 @st.cache_data(show_spinner=True)
 def load_demo_data() -> pd.DataFrame:
-    dataset = fetch_ucirepo(id=352)
-    df = dataset.data.features.copy()
+    """
+    Load the UCI Online Retail dataset directly from the downloadable Excel file
+    instead of using ucimlrepo, which can fail on Streamlit Cloud with
+    connection errors.
+    """
+    uci_xlsx_url = (
+        "https://archive.ics.uci.edu/static/public/352/online+retail.zip"
+    )
+
+    # Read the zipped Excel directly
+    # pandas can read from the zip URL when the archive contains a single Excel file
+    df = pd.read_excel(
+        uci_xlsx_url,
+        engine="openpyxl",
+    )
 
     df.columns = [str(c).strip() for c in df.columns]
 
